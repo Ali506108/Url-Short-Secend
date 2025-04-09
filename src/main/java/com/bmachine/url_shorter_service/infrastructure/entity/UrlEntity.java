@@ -1,23 +1,21 @@
 package com.bmachine.url_shorter_service.infrastructure.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "urls")
 public class UrlEntity {
 
 
     @Id
     private String shortCode;
-    private String originalUrl;
-    private long accessCount;
 
-    public UrlEntity(String shortCode, String originalUrl, long accessCount) {
+    private String originalUrl;
+
+
+    public UrlEntity(String shortCode, String originalUrl) {
         this.shortCode = shortCode;
         this.originalUrl = originalUrl;
-        this.accessCount = accessCount;
     }
     public UrlEntity(){}
 
@@ -38,11 +36,4 @@ public class UrlEntity {
         this.originalUrl = originalUrl;
     }
 
-    public long getAccessCount() {
-        return accessCount;
-    }
-
-    public void setAccessCount(long accessCount) {
-        this.accessCount = accessCount;
-    }
 }

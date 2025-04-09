@@ -7,7 +7,11 @@ import com.bmachine.url_shorter_service.infrastructure.entity.UrlEntity;
 import com.bmachine.url_shorter_service.infrastructure.repository.JpaUrlRepository;
 import com.bmachine.url_shorter_service.infrastructure.repository.RedisUrlRepository;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @Service
@@ -46,13 +50,26 @@ public class UrlPersistenceAdapter implements UrlShorteningService {
     @Override
     public ShortUrl getOriginalUrl(String shortUrl) {
         return redisRepository.findByShortCode(shortUrl)
-                .map(url ->  new ShortUrl(shortUrl, url))
-                .switchIfEmpty(Mono.defer(() -> {
-                    return Mono.justOrEmpty(jpaRepository.findByShortCode(shortUrl))
-                            .map(entities -> {
-                                redisRepository.save(shortUrl, entities.getOriginalUrl());
-                                return new ShortUrl(shortUrl, entity.getOriginalUrl());
-                            });
-                }));
+                .map(url -> new ShortUrl(shortUrl, url))
+                .blockOptional().orElseGet(() -> jpaRepository.findById(shortUrl)
+                        .map(entity -> {
+                            redisRepository.save(shortUrl, entity.getOriginalUrl());
+                            return new ShortUrl(shortUrl, entity.getOriginalUrl());
+                        })
+                        .orElseThrow(() -> new NoSuchElementException("Short URL not found")));
+
+    }
+
+    @Override
+    public Flux<UrlEntity> getShortUrls() {
+
+        Flux<UrlEntity> cacheFlux = redisRepository.getShortUrls();
+
+        Flux<UrlEntity> entityFlux = Flux.defer(() ->
+                        Flux.fromIterable(jpaRepository.findAll()))
+                .subscribeOn(Schedulers.boundedElastic()).flatMap(entity ->
+                        redisRepository.save(entity.getShortCode() , entity.getOriginalUrl())
+                                .thenReturn(entity));
+        return cacheFlux.switchIfEmpty(entityFlux);
     }
 }

@@ -9,15 +9,10 @@ public class ShortUrl {
 
     private String originalUrl;
 
-    private long accessCount;
 
-    public ShortUrl(String s, String originalUrl) {}
-
-
-    public ShortUrl(String shortUrl, String originalUrl, long accessCount) {
+    public ShortUrl(String shortUrl, String originalUrl) {
         this.shortUrl = shortUrl;
         this.originalUrl = originalUrl;
-        this.accessCount = accessCount;
     }
 
 
@@ -37,25 +32,6 @@ public class ShortUrl {
         this.originalUrl = originalUrl;
     }
 
-    public long getAccessCount() {
-        return accessCount;
-    }
-
-    public void setAccessCount(long accessCount) {
-        this.accessCount = accessCount;
-    }
 
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        ShortUrl shortUrl1 = (ShortUrl) o;
-        return accessCount == shortUrl1.accessCount && Objects.equals(shortUrl, shortUrl1.shortUrl) && Objects.equals(originalUrl, shortUrl1.originalUrl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(shortUrl, originalUrl, accessCount);
-    }
 }

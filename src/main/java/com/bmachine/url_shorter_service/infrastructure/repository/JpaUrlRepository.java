@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface JpaUrlRepository extends JpaRepository<UrlEntity, Long> {
+public interface JpaUrlRepository extends JpaRepository<UrlEntity, String> {
     List<UrlEntity> findByShortCode(String shortCode);
 }
