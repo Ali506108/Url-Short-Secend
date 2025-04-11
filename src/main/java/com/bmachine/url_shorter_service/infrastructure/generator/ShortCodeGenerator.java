@@ -9,7 +9,17 @@ public class ShortCodeGenerator {
 
 
 
-    public String generate() {
-        return RandomStringUtils.randomAlphanumeric(6);
+    private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int BASE = 62;
+
+    public String encode(long value) {
+        StringBuilder sb = new StringBuilder();
+        while (value > 0) {
+            int remainder = (int) (value % BASE);
+            sb.append(BASE62.charAt(remainder));
+            value /= BASE;
+        }
+        return sb.reverse().toString();
     }
+
 }

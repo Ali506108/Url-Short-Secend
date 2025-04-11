@@ -8,6 +8,7 @@ import com.bmachine.url_shorter_service.infrastructure.repository.JpaUrlReposito
 import com.bmachine.url_shorter_service.infrastructure.repository.RedisUrlRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
@@ -32,20 +33,21 @@ public class UrlPersistenceAdapter implements UrlShorteningService {
 
 
     @Override
-    public ShortUrl createShortUrl(String originalUrl) {
-        ShortUrl shortUrl = urlMapper.toDomain(originalUrl);
+    public Mono<ShortUrl> createShortUrl(String originalUrl) {
+        return urlMapper.toDomain(originalUrl)
+                .flatMap(shortUrl -> {
+                    UrlEntity entity = new UrlEntity();
+                    entity.setShortCode(shortUrl.getShortUrl());
+                    entity.setOriginalUrl(shortUrl.getOriginalUrl());
 
-        UrlEntity entity = new UrlEntity();
-        entity.setShortCode(shortUrl.getShortUrl());
-        entity.setOriginalUrl(shortUrl.getOriginalUrl());
+                    jpaRepository.save(entity);
 
-        jpaRepository.save(entity);
-
-        redisRepository.save(shortUrl.getShortUrl() , shortUrl.getOriginalUrl());
-
-
-        return shortUrl;
+                    return redisRepository.save(shortUrl.getShortUrl(), shortUrl.getOriginalUrl())
+                            .then(Mono.fromCallable(() -> jpaRepository.save(entity)))  // Blocking: Replace with R2DBC later
+                            .thenReturn(shortUrl);
+                });
     }
+
 
     @Override
     public ShortUrl getOriginalUrl(String shortUrl) {

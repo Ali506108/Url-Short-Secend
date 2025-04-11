@@ -26,6 +26,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.apache.commons:commons-lang3:3.12.0")
 
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
 

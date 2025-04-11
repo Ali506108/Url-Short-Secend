@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 
 @Repository
@@ -25,7 +26,7 @@ public class RedisUrlRepository {
 
 
     public Mono<String> save(String shortCode, String originalUrl) {
-        return redisTemplate.opsForValue().set(shortCode, originalUrl).thenReturn(shortCode);
+        return redisTemplate.opsForValue().set(shortCode, originalUrl , Duration.ofDays(7)).thenReturn(shortCode);
     }
 
 
