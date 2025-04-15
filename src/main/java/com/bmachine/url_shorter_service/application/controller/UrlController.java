@@ -20,7 +20,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @RestController
-@RequestMapping("/api/urls")
+@RequestMapping("/urls")
 public class UrlController {
 
     private static final Logger log = LoggerFactory.getLogger(UrlController.class);
