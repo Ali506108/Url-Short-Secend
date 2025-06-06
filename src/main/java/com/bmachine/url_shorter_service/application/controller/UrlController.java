@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/urls")
 public class UrlController {
 
@@ -49,12 +50,14 @@ public class UrlController {
     }
 
 
-    @GetMapping(produces = MediaType.APPLICATION_NDJSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<UrlEntity> getShortUrls() throws UnknownHostException {
         String ip = InetAddress.getLocalHost().getHostAddress();
         log.info("getShortUrls ip: {}", ip);
         return urlService.getShortUrls();
     }
+
+
 
 
 }
