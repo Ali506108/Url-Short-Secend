@@ -9,3 +9,4 @@
 ### for Caching i'm use Redis 
 ### docker for infrastracture 
 ### my goal try to add Kafka for messege
+### and i'm planed to use event-driven
