@@ -1,0 +1,23 @@
+name: URl-Shorter-Service
+on:
+  push:
+    branches: [ url-version ]
+  pull_request:
+    branches: [ url-version ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Bu]ild with Gradle
+        run: gradle build -x test
+      - name: Run Tests
+        run: gradle test
+
+
+
